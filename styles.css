@@ -910,3 +910,73 @@ input[type="time"].input, input[type="date"].input { min-width: 0; }
 .rest-btns { display: flex; gap: 8px; justify-content: center; }
 .rest-big .tb-btn { background: rgba(255,255,255,.22); color: #fff; }
 .rest-big .tb-btn-main { background: #fff; color: var(--c); }
+
+/* ---------- Zdjęcia ćwiczeń ---------- */
+.ex-fig.has-ph { padding: 0; overflow: hidden; background: #111; height: 230px; }
+.ex-fig-lg.has-ph { height: 250px; }
+.ph { position: relative; width: 100%; height: 100%; }
+.ph img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+.ph .ph2 { animation: phx 3s infinite; }
+.ph-tag {
+  position: absolute; left: 8px; bottom: 8px; padding: 2px 8px; border-radius: 10px;
+  background: rgba(0,0,0,.55); color: #fff; font-size: 11px; font-weight: 600; letter-spacing: .03em;
+}
+.ph-b { animation: phx 3s infinite; }
+.ph-a { animation: phy 3s infinite; }
+@keyframes phy { 0%, 40% { opacity: 1; } 50%, 90% { opacity: 0; } 100% { opacity: 1; } }
+@keyframes phx { 0%, 40% { opacity: 0; } 50%, 90% { opacity: 1; } 100% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .ph .ph2, .ph-b { animation: none; opacity: 0; } .ph-a { animation: none; } }
+.ph-thumb { padding: 0; overflow: hidden; }
+.ph-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* ---------- Gotowe treningi ---------- */
+.lib { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+.lib-card {
+  display: flex; flex-direction: column; align-items: flex-start; text-align: left;
+  background: var(--card); border-radius: 12px; padding: 8px 8px 10px; position: relative; overflow: hidden;
+}
+.lib-card.active { box-shadow: 0 0 0 2px var(--c); }
+.lib-card:active { transform: scale(.98); }
+.lib-media { display: block; width: 100%; }
+.lib-media .ex-thumb { width: 100%; height: 86px; margin: 0 0 8px; border-radius: 8px; }
+.lib-name { font-size: 15px; font-weight: 600; line-height: 19px; color: var(--c); }
+.lib-sub { font-size: 12px; color: var(--sec); line-height: 16px; margin-top: 2px; }
+
+/* ---------- Skille ---------- */
+.skill-card {
+  display: flex; gap: 12px; width: 100%; text-align: left; align-items: center;
+  background: var(--card); border-radius: 14px; padding: 10px; margin-bottom: 10px;
+}
+.skill-card:active { transform: scale(.985); }
+.skill-media { flex: none; width: 112px; }
+.skill-media .ex-fig { height: 84px; margin: 0; padding: 4px; }
+.skill-media .ex-fig.has-ph { padding: 0; height: 84px; }
+.skill-media .ph-tag { display: none; }
+.skill-body { flex: 1; min-width: 0; }
+.skill-name { font-size: 17px; font-weight: 700; color: var(--c); }
+.skill-next { font-size: 13px; color: var(--sec); line-height: 17px; margin-top: 2px; }
+.skill-bar { height: 6px; border-radius: 3px; background: var(--fill); margin-top: 8px; overflow: hidden; }
+.skill-bar > div { height: 100%; background: var(--c); border-radius: 3px; }
+.skill-count { font-size: 12px; color: var(--sec); margin-top: 3px; font-variant-numeric: tabular-nums; }
+.skill-hero { padding: 8px; }
+.skill-hero .ex-fig { margin: 0; }
+.tree { position: relative; margin: 8px 0 16px; }
+.node { display: flex; gap: 12px; position: relative; padding-bottom: 12px; cursor: pointer; }
+.node::before {
+  content: ""; position: absolute; left: 17px; top: 36px; bottom: -2px; width: 2px; background: var(--fill2);
+}
+.node:last-child::before { display: none; }
+.node.done::before { background: var(--c); }
+.node-dot {
+  flex: none; width: 36px; height: 36px; border-radius: 18px; display: flex; align-items: center; justify-content: center;
+  background: var(--fill); color: var(--sec); font-weight: 700; font-size: 14px; position: relative; z-index: 1;
+}
+.node.done .node-dot { background: var(--c); color: #fff; }
+.node.cur .node-dot { background: var(--card); color: var(--c); box-shadow: 0 0 0 3px var(--c); }
+.node.lock .node-dot { font-size: 13px; }
+.node-card { flex: 1; min-width: 0; background: var(--card); border-radius: 12px; padding: 10px 12px; }
+.node.lock .node-card { opacity: .55; }
+.node.cur .node-card { box-shadow: 0 0 0 2px var(--c); }
+.node-name { font-size: 16px; font-weight: 600; }
+.node-goal { font-size: 13px; color: var(--sec); margin-top: 1px; }
+.node-how { font-size: 14px; line-height: 19px; margin-top: 6px; }

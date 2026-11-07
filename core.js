@@ -46,6 +46,15 @@ var EX = {
   legcurl:{name:'Uginanie nóg na maszynie', sets:3, rest:75, inc:2.5, variants:[{min:10,max:15,w:true}]},
   wheel: {name:'Kółko do brzucha', sets:3, rest:60, variants:[
     {n:'Kółko z kolan – krótki zakres',min:6,max:12},{n:'Kółko z kolan – pełny zakres',min:6,max:12},{n:'Kółko ze stania – negatyw',min:3,max:6}]},
+  // ćwiczenia z gotowych treningów
+  bwsquat:{name:'Przysiad bez obciążenia', sets:3, rest:60, variants:[{n:'Przysiad',min:15,max:25},{n:'Przysiad z wyskokiem',min:10,max:20}]},
+  plank: {name:'Deska (plank)', type:'time', sets:3, rest:45, variants:[{min:30,max:60}]},
+  sideplank:{name:'Deska bokiem', type:'time', sets:2, rest:30, note:'czas na każdą stronę', variants:[{min:20,max:45}]},
+  bridge:{name:'Mostek biodrowy', sets:3, rest:60, variants:[{n:'Mostek biodrowy',min:12,max:20},{n:'Mostek na jednej nodze',min:8,max:15,nt:'na każdą nogę'}]},
+  climber:{name:'Mountain climbers', type:'time', sets:3, rest:45, variants:[{min:20,max:45}]},
+  superman:{name:'Superman', sets:3, rest:45, variants:[{min:10,max:15}]},
+  twist: {name:'Russian twist', sets:3, rest:45, note:'powtórzenia na stronę', variants:[{min:10,max:20}]},
+  curl:  {name:'Uginanie ramion z hantlami', sets:3, rest:60, inc:1, variants:[{min:8,max:12,w:true}]},
 };
 var WORKOUTS = [
   {id:'UA', name:'Góra A', sub:'Podciąganie, dipsy, barki', color:'#0A84FF', ex:['pull','dip','incdb','row','pike','hang'], cardio:'15 min truchtu lub orbitreka', cardioMin:15},
@@ -53,6 +62,16 @@ var WORKOUTS = [
   {id:'UB', name:'Góra B', sub:'Pompki, podchwyt, L-sit', color:'#BF5AF2', ex:['push','chin','ohp','lat','face','lsit'], cardio:'15 min truchtu lub roweru', cardioMin:15},
   {id:'LB', name:'Dół B',  sub:'Pośladki, uda, brzuch', color:'#30D158', ex:['hipt','press','lunge','legcurl','calf','wheel'], cardio:'20 min truchtu', cardioMin:20},
 ];
+// Gotowe treningi (nie przesuwają kolejki planu)
+var LIBRARY = [
+  {id:'L_FB', name:'Całe ciało bez sprzętu', sub:'W domu, ok. 30 min', color:'#FF375F', ex:['push','bwsquat','pike','bridge','plank','climber'], cardio:'10 min szybkiego marszu lub truchtu', cardioMin:10},
+  {id:'L_QUICK', name:'Szybki – 20 min', sub:'Gdy brakuje czasu', color:'#FF9F0A', ex:['push','bwsquat','pull','plank'], cardio:'', cardioMin:0},
+  {id:'L_PUSH', name:'Push', sub:'Klatka, barki, triceps', color:'#FF6B35', ex:['push','dip','incdb','pike','ohp'], cardio:'10 min orbitreka lub roweru', cardioMin:10},
+  {id:'L_PULL', name:'Pull', sub:'Plecy i biceps', color:'#5E5CE6', ex:['pull','chin','row','lat','face','curl'], cardio:'10 min orbitreka lub roweru', cardioMin:10},
+  {id:'L_LEGS', name:'Nogi bez sprzętu', sub:'Przysiady, pistol, mostek', color:'#32D74B', ex:['bwsquat','pistol','bridge','superman','sideplank'], cardio:'15 min truchtu', cardioMin:15},
+  {id:'L_ABS', name:'Brzuch 15 min', sub:'Deska, hollow, kółko', color:'#64D2FF', ex:['plank','hollow','twist','sideplank','climber'], cardio:'', cardioMin:0},
+];
+var ALLW = WORKOUTS.concat(LIBRARY);
 var WARMUP = 'Rozgrzewka 5–10 min: krążenia ramion i bioder, mobilność barków, 1–2 lekkie serie pierwszego ćwiczenia';
 
 // Normalizacja
@@ -179,6 +198,7 @@ function defState() {
     active: null,
     settings: {sound: true, wake: true, tips: true, remDays: [1, 3, 5], remTime: '18:00'},
     lastExport: null,
+    skills: {},
     installHintHidden: false
   };
 }
@@ -202,6 +222,7 @@ function loadState() {
   if (!st.ex || typeof st.ex !== 'object' || Array.isArray(st.ex)) st.ex = {};
   if (!Array.isArray(st.history)) st.history = [];
   if (!Array.isArray(st.body)) st.body = [];
+  if (!st.skills || typeof st.skills !== 'object') st.skills = {};
   if (!Array.isArray(st.settings.remDays)) st.settings.remDays = [1, 3, 5];
   if (typeof st.nextIdx !== 'number' || st.nextIdx < 0 || st.nextIdx >= WORKOUTS.length) st.nextIdx = 0;
   if (st.active && (typeof st.active !== 'object' || !Array.isArray(st.active.items))) st.active = null;
@@ -311,6 +332,9 @@ var TABS = [
     '<svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
     '<path d="M9 14h10"/><rect x="5" y="8" width="4" height="12" rx="1.5"/><rect x="19" y="8" width="4" height="12" rx="1.5"/>' +
     '<path d="M3 11.5v5M25 11.5v5"/></svg>'},
+  {id: 'skills', label: 'Skille', icon:
+    '<svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+    '<path d="M14 3.5l3.1 6.3 6.9 1-5 4.9 1.2 6.9-6.2-3.3-6.2 3.3 1.2-6.9-5-4.9 6.9-1z"/></svg>'},
   {id: 'history', label: 'Historia', icon:
     '<svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
     '<rect x="4" y="6" width="20" height="18" rx="3"/><path d="M4 11h20M9 3.5v4M19 3.5v4"/>' +

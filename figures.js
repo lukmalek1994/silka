@@ -312,6 +312,45 @@
            {hip: [96, 90], tor: -6, ha: [166, 103], ft: 30}],
        dyn: [{t: 'wheel', at: 'ha'}]}
     ],
+
+    // ---------- pozy do drzewek umiejętności ----------
+    sk_hang: {vb: [0, 0, 160, 140], floor: false, eq: E.bar(84, 16), tempo: 'hold',
+      f: [{hip: [80, 90], tor: -90, ha: [84, 16], an: [80, 136], ft: 80}, {hip: [79, 86], tor: -93, an: [79, 133]}]},
+    sk_fl0: {vb: [0, 0, 160, 140], floor: false, eq: E.bar(110, 16), tempo: 'hold',
+      f: [{hip: [104, 88], tor: -92, ha: [110, 16], an: [100, 132], ft: 80}, {hip: [76, 76], tor: -42, an: [94, 70], ft: 0}]},
+    sk_fl1: {vb: [0, 0, 160, 140], floor: false, eq: E.bar(110, 16), tempo: 'hold',
+      f: [{hip: [104, 88], tor: -92, ha: [110, 16], an: [100, 132], ft: 80}, {hip: [69, 62], tor: -14, an: [80, 84], ft: 60}]},
+    sk_fl2: {vb: [0, 0, 160, 140], floor: false, eq: E.bar(110, 16), tempo: 'hold',
+      f: [{hip: [104, 88], tor: -92, ha: [110, 16], an: [100, 132], an2: [98, 128], ft: 80}, {hip: [68, 56], tor: -3, an: [19, 58], an2: [80, 76], ft: 180, ft2: 60}]},
+    sk_fl3: {vb: [0, 0, 160, 140], floor: false, eq: E.bar(110, 16), tempo: 'hold',
+      f: [{hip: [104, 88], tor: -92, ha: [110, 16], an: [100, 132], ft: 80}, {hip: [68, 55], tor: -1, an: [19, 56], ft: 180}]},
+    sk_lean: {tempo: 'hold',
+      f: [{hip: [63, 83.5], tor: -24, ha: [80, 108], an: [20, 103], ft: 70}, {hip: [56, 84], tor: -20}]},
+    sk_frog: {tempo: 'hold',
+      f: [{hip: [70, 80], tor: 10, ha: [92, 108], an: [70, 107], ft: 0, eb: -1}, {hip: [72, 66], tor: 22, an: [74, 92], ft: 30}]},
+    sk_pl1: {tempo: 'hold',
+      f: [{hip: [62, 90], tor: -26, ha: [88, 108], an: [44, 107], ft: 40}, {hip: [64, 76], tor: -8, an: [82, 84], ft: 20, kb: 1}]},
+    sk_pl2: {tempo: 'hold',
+      f: [{hip: [62, 90], tor: -26, ha: [88, 108], an: [44, 107], ft: 40}, {hip: [63, 72], tor: -1, an: [56, 94], ft: 160}]},
+    sk_pl3: {tempo: 'hold',
+      f: [{hip: [62, 90], tor: -26, ha: [88, 108], an: [44, 107], ft: 40}, {hip: [62, 72], tor: 0, an: [14, 74], ft: 180}]},
+    sk_hsw: {vb: [0, -22, 160, 135], eq: E.line(116, -22, 116, 111), tempo: 'hold',
+      f: [{hip: [80, 60], tor: 50, ha: [98, 108], an: [116, 64], ft: -90, eb: -1}, {hip: [98, 32], tor: 90, an: [108, -15], ft: -80}]},
+    sk_hsc: {vb: [0, -22, 160, 135], eq: E.line(84, -22, 84, 111), tempo: 'hold',
+      f: [{hip: [96, 60], tor: 120, ha: [94, 108], an: [86, 70], ft: -60, eb: -1}, {hip: [92, 32], tor: 92, an: [88, -16], ft: -100}]},
+    sk_hs: {vb: [0, -22, 160, 135], tempo: 'hold',
+      f: [{hip: [78, 56], tor: 40, ha: [100, 108], an: [64, 104], ft: 20, eb: -1}, {hip: [100, 32], tor: 90, an: [100, -16], ft: -80}]},
+    sk_mu: {vb: [0, -14, 160, 160], floor: false, eq: E.bar(84, 50), seq: [0, 1, 2, 3, 3, 2, 1, 0], dur: 4.5,
+      f: [{hip: [79, 122], tor: -92, ha: [84, 50], an: [66, 140], ft: 100},
+          {hip: [70, 92], tor: -100},
+          {hip: [80, 72], tor: -78},
+          {hip: [83, 46], tor: -92}]},
+    sk_vsit: {tempo: 'hold', eq: E.line(64, 100, 92, 100) + E.line(68, 100, 66, 111, 'eqt') + E.line(88, 100, 90, 111, 'eqt'),
+      f: [{hip: [80, 92], tor: -92, ha: [78, 98], an: [120, 107]}, {tor: -112, an: [116, 52], ft: -40}]},
+    sk_deep: {tempo: 'hold',
+      f: [S({tor: -88, an: [82, 107], ha: ['sh', 36, 6]}), {hip: [70, 98], tor: -62, ha: ['sh', 34, 8]}]},
+    sk_support: {tempo: 'hold', eq: E.line(64, 100, 92, 100) + E.line(68, 100, 66, 111, 'eqt') + E.line(88, 100, 90, 111, 'eqt'),
+      f: [{hip: [80, 98], tor: -92, ha: [78, 98], an: [96, 107]}, {hip: [80, 92], an: [72, 104], ft: 100}]},
     _warm: {
       ease: false, seq: [0, 1, 2, 3, 0], dur: 3.2,
       f: [S({ha: ['sh', 2, 38], ha2: ['sh', -2, 38]}),
@@ -432,6 +471,17 @@
     'Obciążenie na pasie lub w kamizelce; technika jak w zwykłym podciąganiu.'
   ];
   var HOW = {
+
+    bwsquat: {t: ['Stopy na szerokość barków, palce lekko na zewnątrz, ręce przed sobą lub za głową.', 'Biodra w tył i w dół, kolana nad palcami, pięty na podłodze.', 'Zejdź poniżej równoległej i wstań dynamicznie.'],
+      v: ['Spokojne, pełne przysiady.', 'Z dołu wyskocz w górę, wyląduj miękko i od razu schodź do kolejnego.']},
+    plank: {t: ['Przedramiona pod barkami, ciało w jednej linii.', 'Spnij brzuch i pośladki – biodra ani nie opadają, ani nie sterczą.', 'Oddychaj spokojnie, patrz w podłogę.']},
+    sideplank: {t: ['Leż na boku, łokieć pod barkiem, nogi proste jedna na drugiej.', 'Unieś biodra, aż ciało będzie w linii.', 'Trzymaj, potem zmień stronę.']},
+    bridge: {t: ['Leż na plecach, stopy blisko pośladków, ręce wzdłuż ciała.', 'Wypchnij biodra w górę przez pięty, aż ciało będzie w linii od barków do kolan.', 'Spnij pośladki na górze i opuszczaj powoli.'],
+      v: ['Obie stopy na podłodze.', 'Jedna noga uniesiona prosto – pracuje tylko druga.']},
+    climber: {t: ['Pozycja jak do pompki, dłonie pod barkami.', 'Na zmianę przyciągaj kolana do klatki w szybkim tempie.', 'Biodra nisko, brzuch spięty.']},
+    superman: {t: ['Leż na brzuchu, ręce wyciągnięte przed siebie.', 'Unieś jednocześnie ręce, klatkę i nogi.', 'Zatrzymaj na 1–2 s i opuść powoli.']},
+    twist: {t: ['Usiądź, odchyl tułów do tyłu, stopy lekko nad podłogą (lub na podłodze – łatwiej).', 'Skręcaj tułów na boki, dotykając dłońmi (lub ciężarem) podłogi.', 'Plecy proste, ruch z tułowia, nie z rąk.']},
+    curl: {t: ['Stań prosto, hantle w dłoniach, łokcie przy tułowiu.', 'Uginaj ręce, unosząc hantle do barków – łokcie się nie ruszają.', 'Opuszczaj powoli do pełnego wyprostu.']},
     pull: {t: ['Chwyt nachwytem, nieco szerzej niż barki.', 'Zacznij od ściągnięcia łopatek w dół, potem prowadź łokcie do żeber.', 'Broda nad drążek, opuszczaj się powoli do pełnego wyprostu rąk.'], v: PULL_V},
     chin: {t: ['Chwyt podchwytem (dłonie do siebie) na szerokość barków.', 'Ciągnij łokcie w dół i do tyłu, klatka do drążka.', 'Pełny zakres: broda nad drążek, w dole proste ręce.'], v: PULL_V},
     dip: {t: ['Barki nisko, z dala od uszu, klatka do przodu.', 'Schodź, aż ramię będzie mniej więcej równoległe do podłogi – bez bólu w barku.', 'Wypchnij się do pełnego wyprostu łokci.'],
@@ -470,6 +520,51 @@
     if (!h) return null;
     return {tips: h.t, how: h.v ? h.v[Math.min(v || 0, h.v.length - 1)] : ''};
   }
+
+
+  /* ---------- prawdziwe zdjęcia (free-exercise-db, public domain) ---------- */
+  var PHOTO = {
+    pull: ['invrow', 'pullup', 'bandpull', 'pullup', 'wpull'],
+    chin: ['invrow', 'chinup', 'bandpull', 'chinup', 'chinup'],
+    dip: ['benchdip', 'dip', 'dip', 'dipchest'],
+    incdb: 'incdb', row: 'cablerow',
+    pike: [null, null, 'hspu', 'hspu'],
+    hang: ['hangknee', 'hangknee', 'hangpike'],
+    squat: 'squat', rdl: 'rdl', bulg: 'bulg',
+    pistol: [null, null, 'pistol', 'pistol'],
+    calf: 'calf',
+    push: ['pushup', 'pushclose', null, null, 'pushup'],
+    ohp: 'ohp', lat: 'lat', face: 'face', hipt: 'hipt', press: 'legpress', lunge: 'lunge', legcurl: 'legcurl',
+    wheel: ['abwheel', 'abwheel', 'rollout'],
+    bwsquat: ['bwsquat', 'jumpsq'], plank: 'plank', sideplank: 'sideplank', bridge: 'bridge',
+    climber: 'climber', superman: 'superman', twist: 'twist', curl: 'curl',
+    _warm: 'armcirc', _run: 'jog'
+  };
+  function photoKey(id, v) {
+    var p = PHOTO[id];
+    if (Array.isArray(p)) p = p[Math.min(v || 0, p.length - 1)];
+    return p || null;
+  }
+  function photoHTML(k) {
+    return '<div class="ph"><img src="img/' + k + '-0.jpg" alt="" decoding="async">' +
+      '<img class="ph2" src="img/' + k + '-1.jpg" alt="" decoding="async">' +
+      '<span class="ph-tag ph-a">Start</span><span class="ph-tag ph-b">Koniec</span></div>';
+  }
+  // Ramka z ilustracją: zdjęcie, jeśli jest, w przeciwnym razie animowany rysunek.
+  // src: {ex, v} | {fig} | {photo}
+  function exMedia(src, cls) {
+    cls = cls || '';
+    var k = src.photo || (src.ex ? photoKey(src.ex, src.v) : null);
+    if (k) return '<div class="ex-fig has-ph ' + cls + '">' + photoHTML(k) + '</div>';
+    return '<div class="ex-fig ' + cls + '">' + figSVG(src.fig || src.ex, src.fig ? 0 : src.v) + '</div>';
+  }
+  function exThumb(id, v) {
+    var k = photoKey(id, v);
+    if (k) return '<div class="ex-thumb ph-thumb"><img src="img/' + k + '-1.jpg" alt="" loading="lazy"></div>';
+    return '<div class="ex-thumb">' + figSVG(id, v, {static: true}) + '</div>';
+  }
+  window.exMedia = exMedia;
+  window.exThumb = exThumb;
 
   window.figSVG = figSVG;
   window.figHow = figHow;

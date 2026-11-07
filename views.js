@@ -24,7 +24,7 @@
   };
   const hDate = h => new Date(h.date);
   const hKey = h => dateKey(hDate(h));
-  const wColor = wid => { const w = WORKOUTS.find(x => x.id === wid); return w ? w.color : 'var(--blue)'; };
+  const wColor = wid => { const w = ALLW.find(x => x.id === wid); return w ? w.color : 'var(--blue)'; };
   const doneSets = h => (h.items || []).reduce((a, it) => a + (it.skip ? 0 : (it.sets || []).length), 0);
   const signed = n => (n > 0 ? '+' : n < 0 ? '−' : '±') + fmt(Math.abs(n));
   const hm = d => pad2(d.getHours()) + ':' + pad2(d.getMinutes());

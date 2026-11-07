@@ -8,7 +8,7 @@
 
   // ---------- lokalne pomocnicze (nazwy z prefiksem w*, by nie kolidować z core) ----------
   const wNum = (el, k) => +el.dataset[k];
-  const wWorkout = (wid) => WORKOUTS.find(w => w.id === wid) || WORKOUTS[0];
+  const wWorkout = (wid) => ALLW.find(w => w.id === wid) || WORKOUTS[0];
   const wVar = (item) => EX[item.id].variants[item.v];
   const wCur = (item) => ({ v: item.v, w: item.w, t: item.t });
   const wIsGym = (def) => def.variants.length === 1 && !!def.variants[0].w;
@@ -67,7 +67,7 @@
   // ---------- A) EKRAN GŁÓWNY ----------
   function wHome() {
     const pick = ui.pick ?? S.nextIdx;
-    const wo = WORKOUTS[pick] || WORKOUTS[0];
+    const wo = ALLW[pick] || WORKOUTS[0];
     const hist = S.history || [];
     let h = `<div class="page">
       <div class="large-title">Trening</div>
@@ -91,14 +91,14 @@
     wo.ex.forEach(id => {
       const def = EX[id], st = getSt(id), vr = def.variants[st.v];
       h += `<div class="row tappable ex-row" data-act="wInfo" data-id="${id}" data-v="${st.v}">
-        <div class="ex-thumb" style="--c:${wo.color}">${figSVG(id, st.v, { static: true })}</div>
+        <span style="--c:${wo.color};display:contents">${exThumb(id, st.v)}</span>
         <div class="row-main">
           <div class="row-title">${esc(vr.n)}</div>
           ${vr.n !== def.name ? `<div class="row-sub">${esc(def.name)}</div>` : ''}
         </div><div class="row-right">${esc(targetStr(def, st))}</div></div>`;
     });
     h += `<div class="row"><div class="row-main"><div class="row-sub">${esc(WARMUP)}</div></div></div>
-      <div class="row"><div class="row-main"><div class="row-title">Kardio: ${esc(wo.cardio)}</div></div></div>
+      ${wo.cardio ? `<div class="row"><div class="row-main"><div class="row-title">Kardio: ${esc(wo.cardio)}</div></div></div>` : ''}
       </div>
       <button class="btn btn-primary btn-block" style="margin-top:12px" data-act="wStart">Rozpocznij trening</button>
     </div>`;
@@ -111,6 +111,14 @@
       <div class="stat"><div class="stat-val">${last ? esc(last.name) : '–'}</div><div class="stat-lbl">${last ? esc(relDay(last.date)) : 'ostatni trening'}</div></div>
       <div class="stat"><div class="stat-val">${hist.length}</div><div class="stat-lbl">${esc(plural(hist.length, 'trening', 'treningi', 'treningów'))} łącznie</div></div>
     </div>`;
+
+    h += `<div class="section-title">Gotowe treningi</div><div class="lib">` + LIBRARY.map((w, j) => {
+      const k = WORKOUTS.length + j;
+      return `<button class="lib-card${k === pick ? ' active' : ''}" style="--c:${w.color}" data-act="wPick" data-k="${k}">
+        <span class="lib-media">${exThumb(w.ex[0], getSt(w.ex[0]).v)}</span>
+        <span class="lib-name">${esc(w.name)}</span>
+        <span class="lib-sub">${esc(w.sub)} · ${w.ex.length} ćw.</span></button>`;
+    }).join('') + `</div>`;
 
     const old = !S.lastExport || (Date.now() - Date.parse(S.lastExport)) > 14 * 864e5;
     if (hist.length && old) {
@@ -151,7 +159,7 @@
     }
     const n = def.variants.length;
     let h = `<div class="ex-card" style="--c:${color}">
-      <div class="ex-fig">${figSVG(item.id, item.v)}</div>
+      ${exMedia({ ex: item.id, v: item.v })}
       <div class="ex-group">${esc(def.name)}</div>
       <div class="ex-name">${esc(vr.n)}</div>`;
     if (n > 1) {
@@ -210,7 +218,7 @@
       `<button class="pg-dot${done ? ' done' : ''}${k === cur ? ' cur' : ''}" data-act="wGo" data-k="${k}" aria-label="Karta ${k + 1}">${done ? '✓' : label}</button>`;
     let h = dot(0, 'R', a.warm);
     a.items.forEach((it, i) => { h += dot(i + 1, String(i + 1), wItemDone(it)); });
-    return h + dot(n + 1, 'K', a.cardio);
+    return h + dot(n + 1, wWorkout(a.wid).cardio ? 'K' : '🏁', a.cardio);
   }
 
   function wNav(k, last) {
@@ -232,7 +240,7 @@
       <div class="pager" id="pager">`;
     // 0: rozgrzewka
     h += `<section class="pg"><div class="ex-card" style="--c:${wo.color}">
-        <div class="ex-fig">${figSVG('_warm', 0)}</div>
+        ${exMedia({ ex: '_warm', v: 0 })}
         <div class="ex-group">Rozgrzewka</div>
         <div style="display:flex;align-items:center;gap:12px">
           <div class="ex-meta" style="flex:1">${esc(WARMUP)}</div>
@@ -241,16 +249,21 @@
       </div>${wNav(0)}</section>`;
     a.items.forEach((it, i) => { h += `<section class="pg">${wExCard(it, i, wo.color)}${wNav(i + 1)}</section>`; });
     // ostatnia: kardio + zakończ
-    h += `<section class="pg"><div class="ex-card" style="--c:${wo.color}">
-        <div class="ex-fig">${figSVG('_run', 0)}</div>
+    h += `<section class="pg">`;
+    if (wo.cardio) {
+      h += `<div class="ex-card" style="--c:${wo.color}">
+        ${exMedia({ ex: '_run', v: 0 })}
         <div class="ex-group">Kardio</div>
         <div style="display:flex;align-items:center;gap:12px">
           <div class="ex-name" style="flex:1">${esc(wo.cardio)}</div>
           ${a.cardio ? '' : `<button class="icon-btn" data-act="wCardio" aria-label="Start kardio">▶</button>`}
           <button class="check${a.cardio ? ' on' : ''}" data-act="wCardioDone" aria-label="Kardio zrobione">✓</button>
         </div>
-      </div>
-      <button class="btn btn-primary btn-block" style="margin-top:4px" data-act="wFinish">Zakończ trening</button>
+      </div>`;
+    } else {
+      h += `<div class="ex-card" style="--c:${wo.color}"><div class="ex-group">Koniec</div><div class="ex-name">Wszystkie ćwiczenia za Tobą 💪</div></div>`;
+    }
+    h += `<button class="btn btn-primary btn-block" style="margin-top:4px" data-act="wFinish">Zakończ trening</button>
       ${wNav(n + 1, true)}</section>`;
     return h + `</div></div>`;
   }
@@ -386,10 +399,10 @@
 
   // ---------- ACTIONS ----------
   ACTIONS.wHideHint = () => { S.installHintHidden = true; wCommit(); };
-  ACTIONS.wPick = (el) => { ui.pick = wNum(el, 'k'); render(); };
+  ACTIONS.wPick = (el) => { ui.pick = wNum(el, 'k'); render(); if (ui.pick >= WORKOUTS.length) wTop(); };
 
   ACTIONS.wStart = () => {
-    const wo = WORKOUTS[ui.pick ?? S.nextIdx] || WORKOUTS[0];
+    const wo = ALLW[ui.pick ?? S.nextIdx] || WORKOUTS[0];
     S.active = {
       wid: wo.id, start: Date.now(), warm: false, cardio: false, timer: null, summary: null,
       items: wo.ex.map(id => {
@@ -423,10 +436,10 @@
   ACTIONS.wTips = () => { S.settings.tips = S.settings.tips === false; wCommit(); };
   ACTIONS.wInfo = (el) => {
     const id = el.dataset.id, v = +el.dataset.v || 0, def = EX[id], vr = def.variants[v];
-    const wo = WORKOUTS.find(w => w.ex.includes(id)) || WORKOUTS[0];
+    const wo = ALLW.find(w => w.ex.includes(id)) || WORKOUTS[0];
     sheet(`<div class="ex-group">${esc(def.name)}</div>
       <div class="ex-name" style="font-size:20px;line-height:25px">${esc(vr.n)}</div>
-      <div class="ex-fig ex-fig-lg" style="--c:${wo.color}">${figSVG(id, v)}</div>
+      <div style="--c:${wo.color}">${exMedia({ ex: id, v }, 'ex-fig-lg')}</div>
       ${wHowHtml(id, v, false)}
       <button class="btn btn-secondary btn-block" style="margin-top:12px" data-act="closeSheet">Zamknij</button>`);
   };
@@ -552,7 +565,7 @@
       })
     });
     const idx = WORKOUTS.findIndex(w => w.id === a.wid);
-    S.nextIdx = (idx + 1) % WORKOUTS.length;
+    if (idx >= 0) S.nextIdx = (idx + 1) % WORKOUTS.length;
     stopTimer();
     S.active = null;
     keepAwake(false);
