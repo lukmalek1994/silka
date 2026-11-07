@@ -35,15 +35,33 @@
       const idx = (i + k) % n, it = items[idx];
       if (it.skip) continue;
       const s = it.sets.findIndex(x => !x.done);
-      if (s >= 0) return `${wVar(it).n} (seria ${s + 1}/${it.sets.length})`;
+      if (s >= 0) return { i: idx, s, label: `${wVar(it).n} (seria ${s + 1}/${it.sets.length})` };
     }
     return null;
   }
   function wStartRest(i) {
     const nt = wNextThing(i);
     if (!nt) return false;
-    startTimer({ mode: 'rest', secs: EX[S.active.items[i].id].rest, label: 'Przerwa – ' + nt });
+    startTimer({ mode: 'rest', secs: EX[S.active.items[i].id].rest, label: 'Przerwa – ' + nt.label, ni: nt.i });
     return true;
+  }
+  // Duże odliczanie przerwy na karcie ćwiczenia, które robisz jako następne
+  function wRestBox(i) {
+    const t = S.active.timer;
+    if (!t || t.mode !== 'rest' || t.ni !== i) return '';
+    const item = S.active.items[i], s = item.sets.findIndex(x => !x.done);
+    const rem = Math.max(0, (t.end - Date.now()) / 1000);
+    const pct = t.total > 0 ? Math.max(0, Math.min(100, (1 - rem / t.total) * 100)) : 100;
+    return `<div class="rest-big">
+      <div class="rest-lbl">Przerwa${s >= 0 ? ` · potem seria ${s + 1}/${item.sets.length}` : ''}</div>
+      <div class="rest-time" data-tleft>${mmss(Math.ceil(rem))}</div>
+      <div class="rest-track"><div class="rest-prog" data-tprog style="width:${pct.toFixed(1)}%"></div></div>
+      <div class="rest-btns">
+        <button class="tb-btn" data-act="tAdd" data-d="-15">−15 s</button>
+        <button class="tb-btn" data-act="tAdd" data-d="15">+15 s</button>
+        <button class="tb-btn tb-btn-main" data-act="tSkip">Pomiń</button>
+      </div>
+    </div>`;
   }
 
   // ---------- A) EKRAN GŁÓWNY ----------
@@ -147,6 +165,7 @@
     const notes = [def.note, vr.nt].filter(Boolean).map(esc).join(' · ');
     h += `<div class="ex-meta">Cel: ${esc(targetStr(def, wCur(item)))} · zakres ${vr.min}–${vr.max}${unitTxt} · przerwa ${mmss(def.rest)}${notes ? '<br>' + notes : ''}</div>`;
     h += wHowHtml(item.id, item.v, true);
+    h += wRestBox(i);
     if (vr.w) {
       const inc = def.inc || 2.5;
       h += `<div class="set-row">

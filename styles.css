@@ -897,3 +897,16 @@ input[type="time"].input, input[type="date"].input { min-width: 0; }
 .howto li { margin: 3px 0; }
 
 .ex-row .row-right { white-space: normal; max-width: 38%; font-size: 15px; }
+
+/* ---------- Duże odliczanie przerwy ---------- */
+.rest-big {
+  margin: 10px 0 8px; padding: 14px 14px 12px; border-radius: 12px; text-align: center;
+  background: var(--c); color: #fff;
+}
+.rest-lbl { font-size: 13px; font-weight: 600; letter-spacing: .02em; opacity: .9; }
+.rest-time { font-size: 64px; line-height: 72px; font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: -.01em; }
+.rest-track { height: 6px; border-radius: 3px; background: rgba(255,255,255,.3); overflow: hidden; margin: 4px 0 12px; }
+.rest-prog { height: 100%; background: #fff; border-radius: 3px; transition: width .25s linear; }
+.rest-btns { display: flex; gap: 8px; justify-content: center; }
+.rest-big .tb-btn { background: rgba(255,255,255,.22); color: #fff; }
+.rest-big .tb-btn-main { background: #fff; color: var(--c); }

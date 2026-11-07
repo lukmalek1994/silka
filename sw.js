@@ -1,5 +1,5 @@
 // Siłka – service worker (działanie offline)
-const CACHE = 'silka-v2';
+const CACHE = 'silka-v3';
 const ASSETS = ['./', './index.html', './styles.css', './core.js', './figures.js', './workout.js', './views.js', './manifest.webmanifest','./icon-180.png', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', e => {

@@ -427,6 +427,7 @@ function startTimer(o) {
   if (o.i != null) t.i = o.i;
   if (o.s != null) t.s = o.s;
   if (o.next != null) t.next = o.next;
+  if (o.ni != null) t.ni = o.ni;
   S.active.timer = t;
   save();
   renderTimerbar();
@@ -484,10 +485,12 @@ function updateTimerbar() {
   var tm = $('tbTime'), pr = $('tbProg');
   var txt = mmss(Math.ceil(rem));
   if (tm && tm.textContent !== txt) tm.textContent = txt;
-  if (pr) {
-    var pct = t.total > 0 ? Math.max(0, Math.min(100, (1 - rem / t.total) * 100)) : 100;
-    pr.style.width = pct.toFixed(1) + '%';
-  }
+  var pct = t.total > 0 ? Math.max(0, Math.min(100, (1 - rem / t.total) * 100)) : 100;
+  if (pr) pr.style.width = pct.toFixed(1) + '%';
+  var big = document.querySelectorAll('[data-tleft]');
+  for (var i = 0; i < big.length; i++) if (big[i].textContent !== txt) big[i].textContent = txt;
+  var bp = document.querySelectorAll('[data-tprog]');
+  for (var j = 0; j < bp.length; j++) bp[j].style.width = pct.toFixed(1) + '%';
 }
 
 function updateElapsed() {
@@ -614,7 +617,7 @@ ACTIONS.tAdd = function (el) {
   t.total = Math.max(1, Math.max(t.total + d, Math.ceil(rem)));
   save();
   if (t.end <= now) { timerDone(t); return; }
-  renderTimerbar();
+  render();
 };
 ACTIONS.tSkip = function () { stopTimer(); render(); };
 ACTIONS.tStop = function () { stopTimer(); render(); };
