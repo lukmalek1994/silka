@@ -4,6 +4,7 @@
  * Zwykły skrypt (bez modułów) – wszystko poniżej jest globalne.
  */
 'use strict';
+var APP_VERSION = '2.1 (7.11 – rozciąganie)';
 
 /* ================================================================
  * DANE PROGRAMU

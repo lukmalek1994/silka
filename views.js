@@ -370,7 +370,7 @@
       '<p style="margin:0 0 8px"><b>Siłka</b> – kalistenika, siłownia i kardio z automatyczną progresją.</p>' +
       '<p style="margin:0 0 8px">Instalacja na iPhonie: otwórz stronę w Safari → <b>Udostępnij</b> → <b>Do ekranu początkowego</b>.</p>' +
       '<p style="margin:0 0 8px">Wszystkie dane zostają tylko na Twoim telefonie – nic nie jest wysyłane na serwer. Rób regularnie kopie zapasowe (Eksportuj kopię).</p>' +
-      '<p class="muted" style="margin:0">Wersja 1.0</p></div>';
+      '<p class="muted" style="margin:0">Wersja ' + APP_VERSION + '</p></div>';
     return page(html);
   };
 
