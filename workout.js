@@ -120,6 +120,8 @@
         <span class="lib-sub">${esc(w.sub)} · ${w.ex.length} ćw.</span></button>`;
     }).join('') + `</div>`;
 
+    if (typeof stretchHomeHTML === 'function') h += stretchHomeHTML();
+
     const old = !S.lastExport || (Date.now() - Date.parse(S.lastExport)) > 14 * 864e5;
     if (hist.length && old) {
       h += `<div class="card">
@@ -386,6 +388,7 @@
         <div class="ex-meta">Rozgrzewka: ${a.warm ? 'tak' : 'nie'} · Kardio: ${a.cardio ? 'tak' : 'nie'}</div>
       </div>
       <button class="btn btn-primary btn-block" data-act="wSave">Zapisz trening</button>
+      ${typeof stretchAfter === 'function' ? `<button class="btn btn-secondary btn-block" style="margin-top:8px" data-act="wSaveStretch">Zapisz i rozciągnij się · ${esc(stretchRoutineName(a.wid))}</button>` : ''}
       <button class="btn btn-secondary btn-block" style="margin-top:8px" data-act="wBack">Wróć do treningu</button>
     </div>`;
     return h;
@@ -538,6 +541,7 @@
     wCommit();
   };
 
+  ACTIONS.wSaveStretch = () => { const wid = S.active.wid; ACTIONS.wSave(); stretchAfter(wid); };
   ACTIONS.wBack = () => { S.active.summary = null; wCommit(); };
 
   ACTIONS.wSave = () => {

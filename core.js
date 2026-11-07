@@ -199,6 +199,7 @@ function defState() {
     settings: {sound: true, wake: true, tips: true, remDays: [1, 3, 5], remTime: '18:00'},
     lastExport: null,
     skills: {},
+    stretchLog: [],
     installHintHidden: false
   };
 }
@@ -223,6 +224,7 @@ function loadState() {
   if (!Array.isArray(st.history)) st.history = [];
   if (!Array.isArray(st.body)) st.body = [];
   if (!st.skills || typeof st.skills !== 'object') st.skills = {};
+  if (!Array.isArray(st.stretchLog)) st.stretchLog = [];
   if (!Array.isArray(st.settings.remDays)) st.settings.remDays = [1, 3, 5];
   if (typeof st.nextIdx !== 'number' || st.nextIdx < 0 || st.nextIdx >= WORKOUTS.length) st.nextIdx = 0;
   if (st.active && (typeof st.active !== 'object' || !Array.isArray(st.active.items))) st.active = null;

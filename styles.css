@@ -980,3 +980,18 @@ input[type="time"].input, input[type="date"].input { min-width: 0; }
 .node-name { font-size: 16px; font-weight: 600; }
 .node-goal { font-size: 13px; color: var(--sec); margin-top: 1px; }
 .node-how { font-size: 14px; line-height: 19px; margin-top: 6px; }
+
+/* ---------- Rozciąganie ---------- */
+.st-steps { display: flex; gap: 3px; margin: 4px 0 12px; }
+.st-steps span { flex: 1; height: 4px; border-radius: 2px; background: var(--fill2); }
+.st-steps span.done { background: var(--c); opacity: .5; }
+.st-steps span.cur { background: var(--c); }
+.st-timer { text-align: center; margin: 8px 0 4px; }
+.st-time { font-size: 72px; line-height: 80px; font-weight: 700; color: var(--c); font-variant-numeric: tabular-nums; }
+.st-timer.prep .st-time { color: var(--sec); font-size: 56px; }
+.st-timer .rest-track { background: var(--fill); }
+.st-timer .rest-prog { background: var(--c); }
+.st-ctrl { display: flex; gap: 8px; justify-content: center; margin-top: 14px; }
+.st-ctrl .tb-btn { min-width: 56px; font-size: 20px; }
+.st-ctrl .st-play { min-width: 130px; font-size: 16px; background: var(--c); }
+.st-ctrl .tb-btn:disabled { opacity: .35; }
