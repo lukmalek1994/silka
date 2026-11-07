@@ -345,8 +345,12 @@
     // Trening
     const sw = (k, label) => '<label class="row"><div class="row-main"><div class="row-title">' + label + '</div></div>' +
       '<input type="checkbox" class="switch" data-chg="vToggle" data-k="' + k + '"' + (st[k] ? ' checked' : '') + '></label>';
-    html += '<div class="section-title">Trening</div><div class="list">' + sw('sound', 'Dźwięk po przerwie') + sw('wake', 'Nie wygaszaj ekranu') +
-      '<div class="row tappable" data-act="vBeep"><div class="row-main"><div class="row-title" style="color:var(--blue)">Testuj dźwięk</div></div></div></div>';
+    html += '<div class="section-title">Trening</div><div class="list">' +
+      '<div class="row tappable" data-act="vRestPick"><div class="row-main"><div class="row-title">Przerwa między seriami</div></div>' +
+      '<span class="row-right">' + (st.rest > 0 ? mmss(st.rest) : 'wg ćwiczeń') + '</span><span class="chev">›</span></div>' +
+      sw('sound', 'Dźwięk po przerwie') + sw('wake', 'Nie wygaszaj ekranu') +
+      '<div class="row tappable" data-act="vBeep"><div class="row-main"><div class="row-title" style="color:var(--blue)">Testuj dźwięk</div></div></div></div>' +
+      '<div class="footnote">Przerwę możesz też ustawić osobno dla ćwiczenia (Plan treningowy → ćwiczenie) i zmieniać w trakcie przyciskami −15/+15.</div>';
 
     // Przypomnienia
     const days = st.remDays || [];
@@ -406,7 +410,12 @@
         def.variants.map((vr, i) => '<option value="' + i + '"' + (i === c.v ? ' selected' : '') + '>' + (i + 1) + '. ' + esc(vr.n) + '</option>').join('') +
         '</select></label>';
     }
-    html += '<div id="veFields">' + exEditorFields(def, c.v, c) + '</div></div>';
+    html += '<div id="veFields">' + exEditorFields(def, c.v, c) + '</div>';
+    const own = S.restEx[id] || 0, glob = S.settings.rest > 0 ? S.settings.rest : def.rest;
+    html += '<label class="row field"><span>Przerwa</span><select class="input" id="veR">' +
+      '<option value="0"' + (own ? '' : ' selected') + '>Domyślna (' + mmss(glob) + ')</option>' +
+      REST_OPTS.map(x => '<option value="' + x + '"' + (own === x ? ' selected' : '') + '>' + mmss(x) + '</option>').join('') +
+      '</select></label></div>';
     html += '<button class="btn btn-primary btn-block" data-act="vExSave" data-id="' + id + '">Zapisz</button>';
     html += '<button class="btn btn-danger btn-block" data-act="vExReset" data-id="' + id + '" style="margin-top:8px">Resetuj poziom</button>';
     html += '<div class="footnote">Reset przywraca wariant startowy i dolną granicę zakresu.</div>' + closeBtn;
@@ -430,6 +439,8 @@
     if (t === null || t <= 0) t = vr.min;
     t = Math.round(t);
     S.ex[id] = { v, w, t, fails: 0, prev: null };
+    const rEl = document.getElementById('veR');
+    if (rEl) { const r = +rEl.value || 0; if (r > 0) S.restEx[id] = r; else delete S.restEx[id]; }
     closeSheet();
     rerender();
     toast('Zapisano');
@@ -441,6 +452,25 @@
     closeSheet();
     rerender();
     toast('Poziom zresetowany');
+  };
+
+  ACTIONS.vRestPick = () => {
+    const cur = S.settings.rest || 0;
+    let html = sheetHead('Przerwa między seriami', 'Dla wszystkich ćwiczeń, które nie mają własnej przerwy') + '<div class="list">';
+    html += '<div class="row tappable" data-act="vRestSet" data-v="0"><div class="row-main"><div class="row-title">Według ćwiczeń</div>' +
+      '<div class="row-sub">Dłużej przy ciężkich (np. przysiad 3:00), krócej przy lekkich (1:00)</div></div>' + (cur ? '' : '<span class="row-right" style="color:var(--blue)">✓</span>') + '</div>';
+    REST_OPTS.forEach(x => {
+      html += '<div class="row tappable" data-act="vRestSet" data-v="' + x + '"><div class="row-main"><div class="row-title">' + mmss(x) + (x === 60 ? ' min' : '') + '</div></div>' +
+        (cur === x ? '<span class="row-right" style="color:var(--blue)">✓</span>' : '') + '</div>';
+    });
+    html += '</div>' + closeBtn;
+    sheet(html);
+  };
+  ACTIONS.vRestSet = el => {
+    const v = +el.dataset.v || 0;
+    if (v > 0) S.settings.rest = v; else delete S.settings.rest;
+    closeSheet(); rerender();
+    toast(v > 0 ? 'Przerwa: ' + mmss(v) : 'Przerwa według ćwiczeń');
   };
 
   ACTIONS.vToggle = el => {

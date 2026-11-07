@@ -995,3 +995,7 @@ input[type="time"].input, input[type="date"].input { min-width: 0; }
 .st-ctrl .tb-btn { min-width: 56px; font-size: 20px; }
 .st-ctrl .st-play { min-width: 130px; font-size: 16px; background: var(--c); }
 .st-ctrl .tb-btn:disabled { opacity: .35; }
+.hold-big { background: var(--green); }
+.hold-big.prep { background: var(--orange); }
+.hold-big .tb-btn-main { color: var(--text); background: #fff; color: #000; }
+.hold-start { margin: 10px 0 4px; }

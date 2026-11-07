@@ -42,9 +42,30 @@
   function wStartRest(i) {
     const nt = wNextThing(i);
     if (!nt) return false;
-    startTimer({ mode: 'rest', secs: EX[S.active.items[i].id].rest, label: 'Przerwa – ' + nt.label, ni: nt.i });
+    startTimer({ mode: 'rest', secs: restFor(S.active.items[i].id), label: 'Przerwa – ' + nt.label, ni: nt.i });
     return true;
   }
+  // Timer dla ćwiczeń na czas (plank, hollow, L-sit…)
+  function wHoldBox(item, i, def) {
+    if (def.type !== 'time') return '';
+    const t = S.active.timer;
+    if (t && (t.mode === 'prep' || t.mode === 'hold') && t.i === i) {
+      const rem = Math.max(0, (t.end - Date.now()) / 1000);
+      const pct = t.total > 0 ? Math.max(0, Math.min(100, (1 - rem / t.total) * 100)) : 100;
+      const prep = t.mode === 'prep';
+      return `<div class="rest-big hold-big${prep ? ' prep' : ''}">
+        <div class="rest-lbl">${prep ? 'Przygotuj się – zaraz start' : `Trzymaj! · seria ${t.s + 1}/${item.sets.length}`}</div>
+        <div class="rest-time" data-tleft>${mmss(Math.ceil(rem))}</div>
+        <div class="rest-track"><div class="rest-prog" data-tprog style="width:${pct.toFixed(1)}%"></div></div>
+        <div class="rest-btns"><button class="tb-btn tb-btn-main" data-act="tStop">Stop</button></div>
+      </div>`;
+    }
+    const s = item.sets.findIndex(x => !x.done);
+    if (s < 0 || (t && t.mode === 'rest' && t.ni === i)) return '';
+    const secs = Math.max(1, +item.sets[s].r || item.t);
+    return `<button class="btn btn-primary btn-block hold-start" data-act="wHold" data-i="${i}" data-s="${s}">▶ Start timera – seria ${s + 1} (${secs} s)</button>`;
+  }
+
   // Duże odliczanie przerwy na karcie ćwiczenia, które robisz jako następne
   function wRestBox(i) {
     const t = S.active.timer;
@@ -173,9 +194,10 @@
     }
     const unitTxt = def.type === 'time' ? ' s' : '';
     const notes = [def.note, vr.nt].filter(Boolean).map(esc).join(' · ');
-    h += `<div class="ex-meta">Cel: ${esc(targetStr(def, wCur(item)))} · zakres ${vr.min}–${vr.max}${unitTxt} · przerwa ${mmss(def.rest)}${notes ? '<br>' + notes : ''}</div>`;
+    h += `<div class="ex-meta">Cel: ${esc(targetStr(def, wCur(item)))} · zakres ${vr.min}–${vr.max}${unitTxt} · przerwa ${mmss(restFor(item.id))}${notes ? '<br>' + notes : ''}</div>`;
     h += wHowHtml(item.id, item.v, true);
     h += wRestBox(i);
+    h += wHoldBox(item, i, def);
     if (vr.w) {
       const inc = def.inc || 2.5;
       h += `<div class="set-row">
@@ -493,7 +515,7 @@
     const i = wNum(el, 'i'), s = wNum(el, 's'), item = S.active.items[i];
     const secs = Math.max(1, +item.sets[s].r || item.t);
     startTimer({
-      mode: 'prep', secs: 3, label: 'Przygotuj się', i, s,
+      mode: 'prep', secs: 5, label: 'Przygotuj się', i, s,
       next: { mode: 'hold', secs, label: 'Utrzymaj – ' + wVar(item).n }
     });
     wCommit();

@@ -4,7 +4,7 @@
  * Zwykły skrypt (bez modułów) – wszystko poniżej jest globalne.
  */
 'use strict';
-var APP_VERSION = '2.1 (7.11 – rozciąganie)';
+var APP_VERSION = '2.2 (7.11 – przerwy i timer)';
 
 /* ================================================================
  * DANE PROGRAMU
@@ -200,6 +200,7 @@ function defState() {
     settings: {sound: true, wake: true, tips: true, remDays: [1, 3, 5], remTime: '18:00'},
     lastExport: null,
     skills: {},
+    restEx: {},
     stretchLog: [],
     installHintHidden: false
   };
@@ -226,6 +227,7 @@ function loadState() {
   if (!Array.isArray(st.body)) st.body = [];
   if (!st.skills || typeof st.skills !== 'object') st.skills = {};
   if (!Array.isArray(st.stretchLog)) st.stretchLog = [];
+  if (!st.restEx || typeof st.restEx !== 'object') st.restEx = {};
   if (!Array.isArray(st.settings.remDays)) st.settings.remDays = [1, 3, 5];
   if (typeof st.nextIdx !== 'number' || st.nextIdx < 0 || st.nextIdx >= WORKOUTS.length) st.nextIdx = 0;
   if (st.active && (typeof st.active !== 'object' || !Array.isArray(st.active.items))) st.active = null;
@@ -270,6 +272,15 @@ function getSt(id) {
   var v = d.start || 0;
   return {v: v, w: null, t: d.variants[v].min, fails: 0, prev: null};
 }
+
+/** Czas przerwy: własny dla ćwiczenia > ustawienie globalne > domyślny z planu */
+function restFor(id) {
+  var r = S.restEx && S.restEx[id];
+  if (r > 0) return r;
+  if (S.settings && S.settings.rest > 0) return S.settings.rest;
+  return (EX[id] && EX[id].rest) || 90;
+}
+var REST_OPTS = [30, 45, 60, 75, 90, 120, 150, 180, 240];
 
 function isGym(def) { return def.variants.length === 1 && !!def.variants[0].w; }
 
