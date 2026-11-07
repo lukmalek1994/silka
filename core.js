@@ -177,7 +177,7 @@ function defState() {
     history: [],
     body: [],
     active: null,
-    settings: {sound: true, wake: true, remDays: [1, 3, 5], remTime: '18:00'},
+    settings: {sound: true, wake: true, tips: true, remDays: [1, 3, 5], remTime: '18:00'},
     lastExport: null,
     installHintHidden: false
   };
@@ -355,6 +355,7 @@ function render() {
       html = '<div class="page"><div class="empty">Ten widok jest jeszcze niedostępny.</div></div>';
     }
     view.innerHTML = html == null ? '' : html;
+    if (typeof onAfterRender === 'function') { try { onAfterRender(); } catch (e) { if (typeof console !== 'undefined') console.error(e); } }
   }
   renderTabbar();
   renderTimerbar();

@@ -72,7 +72,9 @@
       <div style="margin-top:8px">`;
     wo.ex.forEach(id => {
       const def = EX[id], st = getSt(id), vr = def.variants[st.v];
-      h += `<div class="row"><div class="row-main">
+      h += `<div class="row tappable ex-row" data-act="wInfo" data-id="${id}" data-v="${st.v}">
+        <div class="ex-thumb" style="--c:${wo.color}">${figSVG(id, st.v, { static: true })}</div>
+        <div class="row-main">
           <div class="row-title">${esc(vr.n)}</div>
           ${vr.n !== def.name ? `<div class="row-sub">${esc(def.name)}</div>` : ''}
         </div><div class="row-right">${esc(targetStr(def, st))}</div></div>`;
@@ -131,6 +133,7 @@
     }
     const n = def.variants.length;
     let h = `<div class="ex-card" style="--c:${color}">
+      <div class="ex-fig">${figSVG(item.id, item.v)}</div>
       <div class="ex-group">${esc(def.name)}</div>
       <div class="ex-name">${esc(vr.n)}</div>`;
     if (n > 1) {
@@ -143,6 +146,7 @@
     const unitTxt = def.type === 'time' ? ' s' : '';
     const notes = [def.note, vr.nt].filter(Boolean).map(esc).join(' · ');
     h += `<div class="ex-meta">Cel: ${esc(targetStr(def, wCur(item)))} · zakres ${vr.min}–${vr.max}${unitTxt} · przerwa ${mmss(def.rest)}${notes ? '<br>' + notes : ''}</div>`;
+    h += wHowHtml(item.id, item.v, true);
     if (vr.w) {
       const inc = def.inc || 2.5;
       h += `<div class="set-row">
@@ -167,32 +171,108 @@
     return h;
   }
 
+  // Instrukcja (opis wariantu + punkty techniki)
+  function wHowHtml(id, v, toggle) {
+    const how = figHow(id, v);
+    if (!how) return '';
+    const open = !toggle || S.settings.tips !== false;
+    let h = `<div class="howto">`;
+    if (how.how) h += `<div class="howto-v">${esc(how.how)}</div>`;
+    if (toggle) h += `<button class="howto-btn" data-act="wTips">${open ? 'Ukryj technikę ▴' : 'Pokaż technikę ▾'}</button>`;
+    if (open) h += `<ol>${how.tips.map(t => `<li>${esc(t)}</li>`).join('')}</ol>`;
+    return h + `</div>`;
+  }
+
+  const wItemDone = (it) => it.skip || (it.sets.length > 0 && it.sets.every(s => s.done));
+
+  function wDots() {
+    const a = S.active, n = a.items.length, cur = ui.pg || 0;
+    const dot = (k, label, done) =>
+      `<button class="pg-dot${done ? ' done' : ''}${k === cur ? ' cur' : ''}" data-act="wGo" data-k="${k}" aria-label="Karta ${k + 1}">${done ? '✓' : label}</button>`;
+    let h = dot(0, 'R', a.warm);
+    a.items.forEach((it, i) => { h += dot(i + 1, String(i + 1), wItemDone(it)); });
+    return h + dot(n + 1, 'K', a.cardio);
+  }
+
+  function wNav(k, last) {
+    return `<div class="pg-nav">
+      ${k > 0 ? `<button class="btn btn-secondary btn-small" data-act="wGo" data-k="${k - 1}">‹ Wstecz</button>` : '<span></span>'}
+      ${last ? '' : `<button class="btn btn-secondary btn-small" data-act="wGo" data-k="${k + 1}">Dalej ›</button>`}
+    </div>`;
+  }
+
   function wActive() {
-    const a = S.active, wo = wWorkout(a.wid);
+    const a = S.active, wo = wWorkout(a.wid), n = a.items.length;
     let h = `<div class="page">
       <div style="display:flex;justify-content:space-between;align-items:center">
         <button class="btn btn-danger btn-small" data-act="wCancel">Anuluj</button>
-        <span id="elapsed" class="subtitle" style="font-variant-numeric:tabular-nums">${wClock((Date.now() - a.start) / 1000)}</span>
+        <span id="elapsed" class="subtitle" style="font-variant-numeric:tabular-nums;margin:0">${wClock((Date.now() - a.start) / 1000)}</span>
       </div>
       <div class="large-title" style="color:${wo.color}">${esc(wo.name)}</div>
-      <div class="subtitle">${esc(wo.sub)}</div>
-      <div class="card" style="display:flex;align-items:center;gap:12px;margin-top:12px">
-        <div style="flex:1"><div class="ex-group">Rozgrzewka</div><div class="ex-meta">${esc(WARMUP)}</div></div>
-        <button class="check${a.warm ? ' on' : ''}" data-act="wWarm" aria-label="Rozgrzewka zrobiona">✓</button>
-      </div>`;
-    a.items.forEach((it, i) => { h += wExCard(it, i, wo.color); });
-    h += `<div class="ex-card" style="--c:${wo.color}">
-      <div class="ex-group">Kardio</div>
-      <div style="display:flex;align-items:center;gap:12px">
-        <div class="ex-name" style="flex:1">${esc(wo.cardio)}</div>
-        ${a.cardio ? '' : `<button class="icon-btn" data-act="wCardio" aria-label="Start kardio">▶</button>`}
-        <button class="check${a.cardio ? ' on' : ''}" data-act="wCardioDone" aria-label="Kardio zrobione">✓</button>
+      <div class="pg-dots" id="pgDots" style="--c:${wo.color}">${wDots()}</div>
+      <div class="pager" id="pager">`;
+    // 0: rozgrzewka
+    h += `<section class="pg"><div class="ex-card" style="--c:${wo.color}">
+        <div class="ex-fig">${figSVG('_warm', 0)}</div>
+        <div class="ex-group">Rozgrzewka</div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <div class="ex-meta" style="flex:1">${esc(WARMUP)}</div>
+          <button class="check${a.warm ? ' on' : ''}" data-act="wWarm" aria-label="Rozgrzewka zrobiona">✓</button>
+        </div>
+      </div>${wNav(0)}</section>`;
+    a.items.forEach((it, i) => { h += `<section class="pg">${wExCard(it, i, wo.color)}${wNav(i + 1)}</section>`; });
+    // ostatnia: kardio + zakończ
+    h += `<section class="pg"><div class="ex-card" style="--c:${wo.color}">
+        <div class="ex-fig">${figSVG('_run', 0)}</div>
+        <div class="ex-group">Kardio</div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <div class="ex-name" style="flex:1">${esc(wo.cardio)}</div>
+          ${a.cardio ? '' : `<button class="icon-btn" data-act="wCardio" aria-label="Start kardio">▶</button>`}
+          <button class="check${a.cardio ? ' on' : ''}" data-act="wCardioDone" aria-label="Kardio zrobione">✓</button>
+        </div>
       </div>
-    </div>
-    <button class="btn btn-primary btn-block" style="margin-top:8px" data-act="wFinish">Zakończ trening</button>
-    </div>`;
-    return h;
+      <button class="btn btn-primary btn-block" style="margin-top:4px" data-act="wFinish">Zakończ trening</button>
+      ${wNav(n + 1, true)}</section>`;
+    return h + `</div></div>`;
   }
+
+  // ---------- przewijanie kart ----------
+  function wMarkDots(k) {
+    const box = document.getElementById('pgDots');
+    if (!box) return;
+    Array.prototype.forEach.call(box.children, (b, j) => b.classList.toggle('cur', j === k));
+    const c = box.children[k];
+    if (c && c.scrollIntoView) {
+      const l = c.offsetLeft - box.clientWidth / 2 + c.clientWidth / 2;
+      box.scrollTo ? box.scrollTo({ left: l, behavior: 'smooth' }) : (box.scrollLeft = l);
+    }
+  }
+  function wGoTo(k, smooth) {
+    const p = document.getElementById('pager');
+    if (!p) return;
+    k = Math.max(0, Math.min(p.children.length - 1, k));
+    ui.pg = k;
+    const x = k * p.clientWidth;
+    if (smooth && p.scrollTo) p.scrollTo({ left: x, behavior: 'smooth' }); else p.scrollLeft = x;
+    wMarkDots(k);
+    if (smooth) {
+      const top = p.getBoundingClientRect().top;
+      if (top < 0) try { window.scrollBy({ top: top - 120, behavior: 'smooth' }); } catch (e) { window.scrollBy(0, top - 120); }
+    }
+  }
+  function wAdvanceLater(k) {
+    setTimeout(() => { if (S.active && !S.active.summary && ui.tab === 'today') wGoTo(k, true); }, 650);
+  }
+  globalThis.onAfterRender = function () {
+    if (document.getElementById('pager')) wGoTo(ui.pg || 0, false);
+  };
+  document.addEventListener('scroll', (e) => {
+    const p = e.target;
+    if (!p || p.id !== 'pager' || !p.clientWidth) return;
+    const k = Math.round(p.scrollLeft / p.clientWidth);
+    if (k !== ui.pg) { ui.pg = k; wMarkDots(k); }
+  }, true);
+  window.addEventListener('resize', () => { if (document.getElementById('pager')) wGoTo(ui.pg || 0, false); });
 
   // ---------- Podsumowanie: budowa ----------
   function wBeats(a, b) {
@@ -301,6 +381,7 @@
         };
       })
     };
+    ui.pg = 0;
     keepAwake(true);
     wCommit(); wTop();
   };
@@ -314,7 +395,22 @@
     });
   };
 
-  ACTIONS.wWarm = () => { S.active.warm = !S.active.warm; wCommit(); };
+  ACTIONS.wWarm = () => {
+    S.active.warm = !S.active.warm;
+    wCommit();
+    if (S.active.warm && (ui.pg || 0) === 0) wAdvanceLater(1);
+  };
+  ACTIONS.wGo = (el) => wGoTo(wNum(el, 'k'), true);
+  ACTIONS.wTips = () => { S.settings.tips = S.settings.tips === false; wCommit(); };
+  ACTIONS.wInfo = (el) => {
+    const id = el.dataset.id, v = +el.dataset.v || 0, def = EX[id], vr = def.variants[v];
+    const wo = WORKOUTS.find(w => w.ex.includes(id)) || WORKOUTS[0];
+    sheet(`<div class="ex-group">${esc(def.name)}</div>
+      <div class="ex-name" style="font-size:20px;line-height:25px">${esc(vr.n)}</div>
+      <div class="ex-fig ex-fig-lg" style="--c:${wo.color}">${figSVG(id, v)}</div>
+      ${wHowHtml(id, v, false)}
+      <button class="btn btn-secondary btn-block" style="margin-top:12px" data-act="closeSheet">Zamknij</button>`);
+  };
 
   ACTIONS.wVar = (el) => {
     const item = S.active.items[wNum(el, 'i')], def = EX[item.id];
@@ -355,6 +451,7 @@
     set.done = !set.done;
     if (set.done) wStartRest(i);
     wCommit();
+    if (set.done && wItemDone(S.active.items[i])) wAdvanceLater(i + 2);
   };
 
   ACTIONS.wHold = (el) => {
@@ -382,6 +479,7 @@
     const item = S.active.items[wNum(el, 'i')];
     item.skip = !item.skip;
     wCommit();
+    if (item.skip) wAdvanceLater(wNum(el, 'i') + 2);
   };
 
   ACTIONS.wCardio = () => {
@@ -456,6 +554,7 @@
         set.r = t.total;
         set.done = true;
         wStartRest(t.i);
+        if (wItemDone(item)) wAdvanceLater(t.i + 2);
       }
     } else if (t.mode === 'cardio') {
       S.active.cardio = true;
